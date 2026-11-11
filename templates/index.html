@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Setu AI - Enterprise Email Template System &amp; Live Sandbox</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: #f8fafc;
+      color: #0f172a;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-slate-50 flex flex-col">
+
+  <!-- Top App Navigation Bar -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <!-- Setu AI Brand Mark -->
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-[#059669] to-[#047857] flex items-center justify-center text-white font-extrabold text-base shadow-sm">
+          S
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-extrabold text-slate-900 tracking-tight text-base"><strong class="text-[#047857]">Setu</strong> AI</span>
+            <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">
+              16 Enterprise Templates
+            </span>
+          </div>
+          <span class="text-[11px] text-slate-400 font-semibold tracking-wider uppercase">AI-Enabled Workspace &bull; IDP</span>
+        </div>
+      </div>
+
+      <!-- Quick Template Selector Dropdown -->
+      <div class="flex items-center gap-3">
+        <label for="template-select" class="text-xs font-semibold text-slate-600 hidden sm:inline">Select Template:</label>
+        <select id="template-select" onchange="switchTemplate(this.value)" class="text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-800 py-1.5 px-3 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#059669] max-w-[280px] sm:max-w-[420px]">
+          <optgroup label="1. Account & Onboarding">
+            <option value="01">01. Account Registration & Email Verification</option>
+            <option value="14">14. Resent Email Verification Link</option>
+            <option value="15">15. Account Confirmed & Verified</option>
+            <option value="02">02. Workspace Employee Account Activation</option>
+          </optgroup>
+          <optgroup label="2. Security & Authentication">
+            <option value="03">03. Password Reset Requested</option>
+            <option value="04">04. Password Reset Completed (Security Alert)</option>
+            <option value="05">05. New Device / Location Sign-in Alert</option>
+            <option value="06">06. One-Time Passcode (OTP)</option>
+            <option value="16">16. Resent One-Time Passcode (OTP)</option>
+          </optgroup>
+          <optgroup label="3. Identity & Access Governance">
+            <option value="07">07. Access Request Needs Approval</option>
+            <option value="08">08. Access Request Approved</option>
+            <option value="09">09. Access Request Not Approved (Declined)</option>
+            <option value="10">10. Access Review Campaign Assigned</option>
+            <option value="11">11. Access Review Approaching Deadline Reminder</option>
+            <option value="12">12. Access Review Urgent Escalation</option>
+          </optgroup>
+          <optgroup label="4. System Digests & Activity">
+            <option value="13">13. Unread In-App Notifications Digest</option>
+          </optgroup>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <!-- Workspace Container -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+
+    <!-- Control Header -->
+    <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <h2 id="template-title" class="text-lg font-bold text-slate-900">01. Account Registration &amp; Email Verification</h2>
+            <span id="template-code" class="px-2 py-0.5 text-xs font-mono rounded bg-slate-100 text-slate-700 border border-slate-200">
+              AUTH_EMAIL_VERIFICATION_REQUESTED
+            </span>
+            <span id="category-badge" class="px-2 py-0.5 text-[11px] font-semibold rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">
+              Account &amp; Onboarding
+            </span>
+          </div>
+          <p id="template-desc" class="text-xs text-slate-500 mt-1">
+            Sent upon individual signup to verify email address. Leads directly to <code class="font-mono text-slate-700 bg-slate-100 px-1 py-0.5 rounded">/verify-account</code> in IDP.
+          </p>
+        </div>
+
+        <!-- Controls: Viewport + Views -->
+        <div class="flex flex-wrap items-center gap-2">
+          
+          <!-- Viewport Mode -->
+          <div class="bg-slate-100 p-1 rounded-xl flex items-center gap-1 border border-slate-200">
+            <button id="btn-desktop" onclick="setDevice('desktop')" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-white text-slate-900 shadow-xs transition-all">
+              🖥️ Desktop (560px)
+            </button>
+            <button id="btn-mobile" onclick="setDevice('mobile')" class="px-3 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 transition-all">
+              📱 Mobile (375px)
+            </button>
+          </div>
+
+          <!-- View Mode -->
+          <div class="bg-slate-100 p-1 rounded-xl flex items-center gap-1 border border-slate-200">
+            <button id="tab-mock" onclick="switchTab('mock')" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-white text-slate-900 shadow-xs">
+              Rendered Preview
+            </button>
+            <button id="tab-html" onclick="switchTab('html')" class="px-3 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900">
+              HTML Template
+            </button>
+            <button id="tab-vars" onclick="switchTab('vars')" class="px-3 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900">
+              Variables Schema
+            </button>
+          </div>
+
+          <a id="btn-direct-link" href="./01-welcome-email-verification-mock.html" target="_blank" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white transition-all shadow-xs flex items-center gap-1">
+            <span>Open Tab</span>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active View Area -->
+    <div id="view-preview" class="flex justify-center transition-all duration-300">
+      <div id="preview-wrapper" class="w-full max-w-[620px] bg-slate-200/70 p-2 sm:p-6 rounded-2xl border border-slate-300 shadow-inner transition-all duration-300">
+        <iframe id="email-frame" class="w-full rounded-xl shadow-lg border border-slate-300 bg-white transition-all duration-300" style="height: 750px;" frameborder="0"></iframe>
+      </div>
+    </div>
+
+    <!-- Raw HTML Tab -->
+    <div id="view-html" class="hidden bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+      <div class="flex items-center justify-between mb-3">
+        <div>
+          <h3 id="html-filename" class="text-sm font-bold text-slate-900">Production Template Source</h3>
+          <p id="html-filepath" class="text-xs text-slate-500 font-mono">plans/templates/01-welcome-email-verification.html</p>
+        </div>
+        <button onclick="copyHtml()" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#059669] hover:bg-[#047857] text-white transition-all flex items-center gap-1.5 shadow-sm">
+          <span id="copy-btn-text">Copy HTML</span>
+        </button>
+      </div>
+      <pre class="bg-slate-950 text-emerald-400 p-4 rounded-xl text-xs font-mono overflow-x-auto max-h-[640px] leading-relaxed"><code id="raw-code"></code></pre>
+    </div>
+
+    <!-- Variables Schema Tab -->
+    <div id="view-vars" class="hidden bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+      <h3 class="text-sm font-bold text-slate-900 mb-1">Payload Variables &amp; Database Interpolation</h3>
+      <p class="text-xs text-slate-500 mb-4">Resolved by <code class="text-slate-800 bg-slate-100 px-1 py-0.5 rounded font-mono">NotificationTemplateResolver.java</code> in <code class="text-slate-800 bg-slate-100 px-1 py-0.5 rounded font-mono">core-notification-service</code>.</p>
+      
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs border border-slate-200 rounded-xl">
+          <thead class="bg-slate-50 text-slate-600">
+            <tr>
+              <th class="p-3 border-b">Placeholder</th>
+              <th class="p-3 border-b">Type</th>
+              <th class="p-3 border-b">Sample Mock Value</th>
+              <th class="p-3 border-b">Purpose &amp; Resolution</th>
+            </tr>
+          </thead>
+          <tbody id="vars-table-body" class="divide-y divide-slate-200">
+            <!-- Dynamically populated -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    const TEMPLATES = {
+      "01": {
+        id: "01",
+        code: "AUTH_EMAIL_VERIFICATION_REQUESTED",
+        category: "Account & Onboarding",
+        title: "01. Account Registration & Email Verification",
+        desc: "Sent upon individual signup to verify email address. Leads directly to /verify-account in IDP.",
+        file: "01-welcome-email-verification.html",
+        mock: "01-welcome-email-verification-mock.html",
+        vars: [
+          { name: "greetingName", type: "String", mock: "Alex Rivera", desc: "User registered full name" },
+          { name: "userEmail", type: "String (Email)", mock: "alex.rivera@example.com", desc: "User signup email address" },
+          { name: "verificationLink", type: "String (URL)", mock: "https://idp.setu.ai/verify-account?token=...", desc: "Direct route to VerifyAccountComponent" },
+          { name: "productName", type: "String", mock: "Setu AI", desc: "Product branding identifier" },
+          { name: "supportEmail", type: "String (Email)", mock: "support@setu.ai", desc: "Customer support contact" }
+        ]
+      },
+      "02": {
+        id: "02",
+        code: "AUTH_EMPLOYEE_ACTIVATION",
+        category: "Account & Onboarding",
+        title: "02. Workspace Employee Account Activation",
+        desc: "Sent when an employee is provisioned into a Setu AI enterprise organization.",
+        file: "02-employee-account-activation.html",
+        mock: "02-employee-account-activation-mock.html",
+        vars: [
+          { name: "greetingName", type: "String", mock: "Sarah Jenkins", desc: "Invited employee's name" },
+          { name: "organizationName", type: "String", mock: "Acme Dynamics Corp", desc: "Target workspace organization" },
+          { name: "activationLink", type: "String (URL)", mock: "https://idp.setu.ai/activate?token=...", desc: "24-hour employee activation token" },
+          { name: "productName", type: "String", mock: "Setu AI", desc: "Platform brand" },
+          { name: "supportEmail", type: "String", mock: "support@setu.ai", desc: "Organization administrator contact" }
+        ]
+      },
+      "03": {
+        id: "03",
+        code: "AUTH_PASSWORD_RESET_REQUESTED",
+        category: "Security & Authentication",
+        title: "03. Password Reset Requested",
+        desc: "Sent when user clicks forgot password or requests credential recovery.",
+        file: "03-password-reset-requested.html",
+        mock: "03-password-reset-requested-mock.html",
+        vars: [
+          { name: "greetingName", type: "String", mock: "Alex Rivera", desc: "Account holder name" },
+          { name: "resetLink", type: "String (URL)", mock: "https://idp.setu.ai/reset-password?token=...", desc: "15-minute password reset link" },
+          { name: "productName", type: "String", mock: "Setu AI", desc: "Platform brand" },
+          { name: "supportEmail", type: "String", mock: "security@setu.ai", desc: "Security operations contact" }
+        ]
+      },
+      "04": {
+        id: "04",
+        code: "AUTH_PASSWORD_RESET_COMPLETED",
+        category: "Security & Authentication",
+        title: "04. Password Reset Completed (Security Alert)",
+        desc: "Security notice confirming password was updated, warning user if unauthorized.",
+        file: "04-password-reset-completed.html",
+        mock: "04-password-reset-completed-mock.html",
+        vars: [
+          { name: "greetingName", type: "String", mock: "Alex Rivera", desc: "Account holder name" },
+          { name: "securityLink", type: "String (URL)", mock: "https://idp.setu.ai/security/sessions", desc: "Direct session termination link" },
+          { name: "productName", type: "String", mock: "Setu AI", desc: "Platform brand" },
+          { name: "supportEmail", type: "String", mock: "security@setu.ai", desc: "Security support contact" }
+        ]
+      },
+      "05": {
+        id: "05",
+        code: "AUTH_NEW_DEVICE_LOGIN",
+        category: "Security & Authentication",
+        title: "05. New Device / Location Sign-in Alert",
+        desc: "Alert triggered when a login occurs from an unrecognized device or IP address.",
+        file: "05-security-new-device-login.html",
+        mock: "05-security-new-device-login-mock.html",
+        vars: [
+          { name: "greetingName", type: "String", mock: "Alex Rivera", desc: "Account holder" },
+          { name: "deviceName", type: "String", mock: "Chrome 130 on macOS (Apple Silicon)", desc: "User-agent device parsed" },
+          { name: "ipAddress", type: "String", mock: "104.28.192.44 (San Francisco, US)", desc: "Origin IP and GeoIP lookup" },
+          { name: "loginTime", type: "String", mock: "November 10, 2026 at 18:24 UTC", desc: "Timestamp of session initiation" },
+          { name: "securityLink", type: "String (URL)", mock: "https://idp.setu.ai/security/devices", desc: "Manage authorized devices" },
+          { name: "productName", type: "String", mock: "Setu AI", desc: "Platform brand" }
+        ]
+      },
+      "06": {
+        id: "06",
+        code: "AUTH_OTP_REQUESTED_EMAIL",
+        category: "Security & Authentication",
+        title: "06. One-Time Passcode (OTP)",
+        desc: "Transactional 6-digit email fallback code for login, step-up MFA, or transaction sign-off.",
+        file: "06-otp-verification-code.html",
+        mock: "06-otp-verification-code-mock.html",
+        vars: [
+          { name: "greetingName", type: "String", mock: "Alex Rivera", desc: "Recipient name" },
+          { name: "otp", type: "String (6-digit)", mock: "592 108", desc: "Cryptographic single-use code" },
+          { name: "productName", type: "String", mock: "Setu AI", desc: "Platform brand" },
+          { name: "supportEmail", type: "String", mock: "security@setu.ai", desc: "Security contact" }
+        ]
+      },
+      "07": {
+        id: "07",
+        code: "GOV_APPROVAL_STEP_ASSIGNED",
+        category: "Identity & Access Governance",
+        title: "07. Access Request Needs Approval",
+        desc: "Sent to designated approver when a team member requests application entitlement access.",
+        file: "07-governance-approval-request.html",
+        mock: "07-governance-approval-request-mock.html",
+        vars: [
+          { name: "greetingName", type: "String", mock: "Marcus Vance", desc: "Approver name" },
+          { name: "appCode", type: "String", mock: "PRODUCTION_KUBERNETES", desc: "Application identifier" },
+          { name: "capabilityCode", type: "String", mock: "CLUSTER_ADMIN", desc: "Requested permission" },
+          { name: "riskClass", type: "String", mock: "CRITICAL_ELEVATED", desc: "Risk classification tier" },
+          { name: "stepKind", type: "String", mock: "Security Lead & Manager Sign-off", desc: "Workflow approval step" },
+          { name: "reviewLink", type: "String (URL)", mock: "https://idp.setu.ai/governance/approvals", desc: "Direct link to approvals portal" }
+        ]
+      },
+      "08": {
+        id: "08",
+        code: "GOV_ACCESS_APPROVED",
+        category: "Identity & Access Governance",
+        title: "08. Access Request Approved",
+        desc: "Notifies requester their requested entitlement has been approved and provisioned.",
+        file: "08-governance-access-approved.html",
+        mock: "08-governance-access-approved-mock.html",
+        vars: [
+          { name: "greetingName", type: "String", mock: "Alex Rivera", desc: "Requester name" },
+          { name: "appCode", type: "String", mock: "PAYMENTS_GATEWAY", desc: "Application name" },
+          { name: "capabilityCode", type: "String", mock: "TRANSACTION_OPERATOR", desc: "Granted role" },
+          { name: "workspaceLink", type: "String (URL)", mock: "https://idp.setu.ai/apps/payments", desc: "Application portal URL" },
+          { name: "productName", type: "String", mock: "Setu AI", desc: "Platform brand" }
+        ]
+      },
+      "09": {
+        id: "09",
+        code: "GOV_ACCESS_REJECTED",
+        category: "Identity & Access Governance",
+        title: "09. Access Request Not Approved (Declined)",
+        desc: "Notifies requester that an entitlement was declined, with approver rationale.",
+        file: "09-governance-access-rejected.html",
+        mock: "09-governance-access-rejected-mock.html",
+        vars: [
+          { name: "greetingName", type: "String", mock: "Marcus Vance", desc: "Requester name" },
+          { name: "appCode", type: "String", mock: "PROD_INFRA_DATABASE", desc: "Target application" },
+          { name: "capabilityCode", type: "String", mock: "DB_SUPERUSER_ADMIN", desc: "Requested capability" },
+          { name: "reason", type: "String", mock: "Requires SecOps Level 2 cert", desc: "Approver reason / feedback" },
+          { name: "requestsLink", type: "String (URL)", mock: "https://idp.setu.ai/governance/my-requests", desc: "Access requests history" }
+        ]
+      },
+      "10": {
+        id: "10",
+        code: "GOV_REVIEW_ASSIGNED",
+        category: "Identity & Access Governance",
+        title: "10. Access Review Campaign Assigned",
+        desc: "Notifies certification reviewer of pending periodic entitlement audit.",
+        file: "10-governance-review-assigned.html",
+        mock: "10-governance-review-assigned-mock.html",
+        vars: [
+          { name: "greetingName", type: "String", mock: "Priya Sharma", desc: "Reviewer name" },
+          { name: "campaignName", type: "String", mock: "Q4 Engineering Access Recertification", desc: "Audit campaign name" },
+          { name: "openItems", type: "Number", mock: "14", desc: "Pending items count" },
+          { name: "dueAt", type: "String", mock: "November 24, 2026, 23:59 UTC", desc: "Compliance deadline" },
+          { name: "reviewLink", type: "String (URL)", mock: "https://idp.setu.ai/governance/campaigns/...", desc: "Certification portal link" }
+        ]
+      },
+      "11": {
+        id: "11",
+        code: "GOV_REVIEW_REMINDER",
+        category: "Identity & Access Governance",
+        title: "11. Access Review Approaching Deadline Reminder",
+        desc: "Urgent reminder warning of impending automatic suspension of unanswered items.",
+        file: "11-governance-review-reminder.html",
+        mock: "11-governance-review-reminder-mock.html",
+        vars: [
+          { name: "greetingName", type: "String", mock: "Priya Sharma", desc: "Reviewer name" },
+          { name: "campaignName", type: "String", mock: "Q4 Engineering Access Recertification", desc: "Audit campaign" },
+          { name: "openItems", type: "Number", mock: "8", desc: "Remaining open items" },
+          { name: "dueAt", type: "String", mock: "Tomorrow at 23:59 UTC", desc: "Cutoff time" },
+          { name: "reviewLink", type: "String (URL)", mock: "https://idp.setu.ai/governance/campaigns/...", desc: "Certification link" }
+        ]
+      },
+      "12": {
+        id: "12",
+        code: "GOV_REVIEW_ESCALATED",
+        category: "Identity & Access Governance",
+        title: "12. Access Review Urgent Escalation",
+        desc: "Escalation notice sent to supervisor or SecOps when reviews breach deadline SLA.",
+        file: "12-governance-review-escalated.html",
+        mock: "12-governance-review-escalated-mock.html",
+        vars: [
+          { name: "greetingName", type: "String", mock: "Elena Rostova (VP Engineering)", desc: "Escalation supervisor" },
+          { name: "campaignName", type: "String", mock: "Production Infrastructure Access Review", desc: "Campaign name" },
+          { name: "openItems", type: "Number", mock: "5", desc: "Overdue items count" },
+          { name: "dueAt", type: "String", mock: "Tonight at 23:59 UTC", desc: "Hard cutoff date" },
+          { name: "escalationLink", type: "String (URL)", mock: "https://idp.setu.ai/governance/escalations/...", desc: "Escalation resolution link" }
+        ]
+      },
+      "13": {
+        id: "13",
+        code: "NOTIFICATION_DIGEST",
+        category: "System Digests & Activity",
+        title: "13. Unread In-App Notifications Digest",
+        desc: "Periodic email digest summarizing unread mentions, requests, and activity.",
+        file: "13-notification-digest.html",
+        mock: "13-notification-digest-mock.html",
+        vars: [
+          { name: "greetingName", type: "String", mock: "Sarah Connor", desc: "Recipient name" },
+          { name: "count", type: "Number", mock: "3", desc: "Unread notifications count" },
+          { name: "itemLines", type: "String (Multiline)", mock: "• Item 1\n• Item 2", desc: "Pre-rendered list of activity lines" },
+          { name: "appLink", type: "String (URL)", mock: "https://idp.setu.ai/inbox", desc: "Inbox link" }
+        ]
+      },
+      "14": {
+        id: "14",
+        code: "AUTH_EMAIL_VERIFICATION_RESENT",
+        category: "Account & Onboarding",
+        title: "14. Resent Email Verification Link",
+        desc: "Fresh email verification token requested when prior link expired or was lost.",
+        file: "14-auth-email-verification-resent.html",
+        mock: "14-auth-email-verification-resent-mock.html",
+        vars: [
+          { name: "greetingName", type: "String", mock: "Maya Lin", desc: "User name" },
+          { name: "verificationLink", type: "String (URL)", mock: "https://idp.setu.ai/verify-account?token=fresh_...", desc: "New 24h verification link" },
+          { name: "productName", type: "String", mock: "Setu AI", desc: "Platform brand" }
+        ]
+      },
+      "15": {
+        id: "15",
+        code: "AUTH_EMAIL_VERIFIED",
+        category: "Account & Onboarding",
+        title: "15. Account Confirmed & Verified",
+        desc: "Welcome confirmation sent once email verification succeeds.",
+        file: "15-auth-email-verified.html",
+        mock: "15-auth-email-verified-mock.html",
+        vars: [
+          { name: "greetingName", type: "String", mock: "Maya Lin", desc: "User name" },
+          { name: "loginLink", type: "String (URL)", mock: "https://idp.setu.ai/login", desc: "Sign-in portal link" },
+          { name: "productName", type: "String", mock: "Setu AI", desc: "Platform brand" }
+        ]
+      },
+      "16": {
+        id: "16",
+        code: "AUTH_OTP_RESENT_EMAIL",
+        category: "Security & Authentication",
+        title: "16. Resent One-Time Passcode (OTP)",
+        desc: "Fresh 6-digit verification passcode requested by user.",
+        file: "16-otp-resent-verification-code.html",
+        mock: "16-otp-resent-verification-code-mock.html",
+        vars: [
+          { name: "greetingName", type: "String", mock: "Maya Lin", desc: "Recipient name" },
+          { name: "otp", type: "String (6-digit)", mock: "841 903", desc: "Fresh 5-minute single-use code" },
+          { name: "productName", type: "String", mock: "Setu AI", desc: "Platform brand" }
+        ]
+      }
+    };
+
+    let activeKey = "01";
+    let fileContentCache = {};
+
+    async function switchTemplate(key) {
+      activeKey = key;
+      const t = TEMPLATES[key];
+      if (!t) return;
+
+      document.getElementById('template-select').value = key;
+      document.getElementById('template-title').textContent = t.title;
+      document.getElementById('template-code').textContent = t.code;
+      document.getElementById('category-badge').textContent = t.category;
+      document.getElementById('template-desc').textContent = t.desc;
+      document.getElementById('btn-direct-link').href = `./${t.mock}`;
+      document.getElementById('html-filename').textContent = `${t.title} (Source)`;
+      document.getElementById('html-filepath').textContent = `plans/templates/${t.file}`;
+
+      // Populate vars table
+      const tbody = document.getElementById('vars-table-body');
+      tbody.innerHTML = '';
+      t.vars.forEach(v => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td class="p-3 font-mono font-semibold text-[#059669]">{{${v.name}}}</td>
+          <td class="p-3 font-mono text-slate-500">${v.type}</td>
+          <td class="p-3 font-medium text-slate-800 break-all">${v.mock}</td>
+          <td class="p-3 text-slate-600">${v.desc}</td>
+        `;
+        tbody.appendChild(row);
+      });
+
+      // Load mock in iframe
+      document.getElementById('email-frame').src = `./${t.mock}`;
+
+      // Fetch raw HTML for code view
+      if (!fileContentCache[t.file]) {
+        try {
+          const res = await fetch(`./${t.file}`);
+          if (res.ok) {
+            fileContentCache[t.file] = await res.text();
+          } else {
+            fileContentCache[t.file] = "<!-- Open this file in your editor or browser to see full raw source -->";
+          }
+        } catch(e) {
+          fileContentCache[t.file] = "<!-- Local file system access: open plans/templates/" + t.file + " directly -->";
+        }
+      }
+      document.getElementById('raw-code').textContent = fileContentCache[t.file] || "";
+    }
+
+    function setDevice(device) {
+      const wrapper = document.getElementById('preview-wrapper');
+      const btnDesk = document.getElementById('btn-desktop');
+      const btnMob = document.getElementById('btn-mobile');
+
+      [btnDesk, btnMob].forEach(b => {
+        b.className = "px-3 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 transition-all";
+      });
+
+      if (device === 'desktop') {
+        wrapper.style.maxWidth = '620px';
+        btnDesk.className = "px-3 py-1.5 rounded-lg text-xs font-medium bg-white text-slate-900 shadow-xs transition-all";
+      } else if (device === 'mobile') {
+        wrapper.style.maxWidth = '400px';
+        btnMob.className = "px-3 py-1.5 rounded-lg text-xs font-medium bg-white text-slate-900 shadow-xs transition-all";
+      }
+    }
+
+    function switchTab(tab) {
+      document.getElementById('view-preview').classList.add('hidden');
+      document.getElementById('view-html').classList.add('hidden');
+      document.getElementById('view-vars').classList.add('hidden');
+
+      const tabM = document.getElementById('tab-mock');
+      const tabH = document.getElementById('tab-html');
+      const tabV = document.getElementById('tab-vars');
+
+      [tabM, tabH, tabV].forEach(t => {
+        t.className = "px-3 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900";
+      });
+
+      if (tab === 'mock') {
+        document.getElementById('view-preview').classList.remove('hidden');
+        tabM.className = "px-3 py-1.5 rounded-lg text-xs font-medium bg-white text-slate-900 shadow-xs";
+      } else if (tab === 'html') {
+        document.getElementById('view-html').classList.remove('hidden');
+        tabH.className = "px-3 py-1.5 rounded-lg text-xs font-medium bg-white text-slate-900 shadow-xs";
+      } else if (tab === 'vars') {
+        document.getElementById('view-vars').classList.remove('hidden');
+        tabV.className = "px-3 py-1.5 rounded-lg text-xs font-medium bg-white text-slate-900 shadow-xs";
+      }
+    }
+
+    function copyHtml() {
+      const code = document.getElementById('raw-code').textContent;
+      navigator.clipboard.writeText(code).then(() => {
+        const text = document.getElementById('copy-btn-text');
+        text.textContent = 'Copied!';
+        setTimeout(() => { text.textContent = 'Copy HTML'; }, 2000);
+      });
+    }
+
+    window.onload = function() {
+      switchTemplate("01");
+    };
+  </script>
+</body>
+</html>
